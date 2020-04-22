@@ -1,0 +1,7 @@
+../stl/assembly/pump.stl: \
+	configuration.scad \
+	src/605zz.scad \
+	src/assembly/../../../stl/Nema17_40h.stl \
+	src/assembly/pump.scad \
+	src/hose_fixator.scad \
+	src/pump-v3.scad \

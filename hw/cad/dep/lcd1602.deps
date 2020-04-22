@@ -1,0 +1,3 @@
+../amf/lcd1602.amf: \
+	configuration.scad \
+	src/lcd1602.scad \

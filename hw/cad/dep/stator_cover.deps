@@ -1,0 +1,6 @@
+../amf/stator_cover.amf: \
+	configuration.scad \
+	src/4printing/stator_cover.scad \
+	src/605zz.scad \
+	src/hose_fixator.scad \
+	src/pump-v3.scad \

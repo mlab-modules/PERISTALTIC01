@@ -1,0 +1,5 @@
+../amf/case_bottom.amf: \
+	configuration.scad \
+	src/4printing/case_bottom.scad \
+	src/case-v3.scad \
+	src/lcd1602.scad \

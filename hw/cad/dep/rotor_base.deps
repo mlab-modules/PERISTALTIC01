@@ -1,0 +1,6 @@
+../amf/rotor_base.amf: \
+	configuration.scad \
+	src/4printing/rotor_base.scad \
+	src/605zz.scad \
+	src/hose_fixator.scad \
+	src/pump-v3.scad \

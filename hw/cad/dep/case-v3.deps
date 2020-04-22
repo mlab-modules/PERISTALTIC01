@@ -1,0 +1,6 @@
+../amf/case-v3.amf: \
+	configuration.scad \
+	src/../../amf/ky-040.stl \
+	src/../../amf/pump-v3-assembly.stl \
+	src/case-v3.scad \
+	src/lcd1602.scad \

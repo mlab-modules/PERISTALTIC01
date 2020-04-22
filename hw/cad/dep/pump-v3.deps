@@ -1,0 +1,6 @@
+../amf/pump-v3.amf: \
+	configuration.scad \
+	src/../../stl/Nema17_40h.stl \
+	src/605zz.scad \
+	src/hose_fixator.scad \
+	src/pump-v3.scad \

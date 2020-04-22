@@ -1,0 +1,3 @@
+../amf/hose_fixator.amf: \
+	/Users/jkt/playground/OpenSCAD/kaklik/PERISTALTIC01/hw/cad/configuration.scad \
+	src/hose_fixator.scad
