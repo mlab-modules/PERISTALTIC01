@@ -1,7 +1,7 @@
 ../stl/assembly/case.stl: \
-	configuration.scad \
-	src/assembly/../../../stl/assembly/pump.stl \
-	src/assembly/../../../stl/ky-040.stl \
-	src/assembly/case.scad \
-	src/case-v3.scad \
 	src/lcd1602.scad \
+	src/case-v3.scad \
+	src/assembly/case.scad \
+	src/assembly/../../../stl/ky-040.stl \
+	src/assembly/../../../stl/assembly/pump.stl \
+	configuration.scad \

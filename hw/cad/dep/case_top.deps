@@ -1,5 +1,5 @@
 ../amf/case_top.amf: \
-	configuration.scad \
-	src/4printing/case_top.scad \
-	src/case-v3.scad \
 	src/lcd1602.scad \
+	src/case-v3.scad \
+	src/4printing/case_top.scad \
+	configuration.scad \

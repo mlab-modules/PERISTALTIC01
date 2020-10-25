@@ -1,6 +1,8 @@
 ../amf/stator_support.amf: \
-	configuration.scad \
-	src/4printing/stator_support.scad \
-	src/605zz.scad \
-	src/hose_fixator.scad \
 	src/pump-v3.scad \
+	src/lib/bolts.scad \
+	src/hose_fixator.scad \
+	src/605zz.scad \
+	src/4printing/stator_support.scad \
+	parameters.scad \
+	configuration.scad \

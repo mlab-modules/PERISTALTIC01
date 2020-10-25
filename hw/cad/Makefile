@@ -9,9 +9,9 @@ GCODE_DIR := ../amf/gcode
 PLATE_DIMMENSIONS=120
 SIMARRANGE=/usr/local/bin/simarrange
 STLSORT := stlsort
-OPENSCAD_APP := openscad
+OPENSCAD_APP := OpenSCAD
 MERGE_APP := ./merge_modifiers.sh
-SLICER_APP := slic3r.pl
+SLICER_APP := Slic3r
 VPATH := $(SRC_DIR):$(DEP_DIR):$(AMF_DIR):$(IMG_DIR)
 SRC_FILES := $(filter-out src/bar.cpp, $(SRC_FILES))
 
@@ -43,7 +43,7 @@ $(AMF_DIR)/%.amf : $(SRC_DIR)/%.scad
 	# Remove absolute paths in dependencies.
 	sed -i "s|$(shell pwd)/||" $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@)
 	# Sort deps file to keep git changes to minimum.
-	sort -bf $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@) -o $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@)
+	sort -rf $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@) -o $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@)
 	sed -i 's|[^\]$$|& \\|' $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@)
 	# Add modifiers to AMF files.
 	$(MERGE_APP) -v -a $@ -s $<
@@ -88,7 +88,7 @@ $(ASSEMBLY_STL_DIR)/%.stl : $(ASSEMBLY_DIR)/%.scad
 	# Remove absolute paths in dependencies.
 	sed -i "s|$(shell pwd)/||" $(patsubst $(ASSEMBLY_STL_DIR)/%.stl, $(DEP_DIR)/%.deps, $@)
 	# Sort deps file to keep git changes to minimum.
-	sort -bf $(patsubst $(ASSEMBLY_STL_DIR)/%.stl, $(DEP_DIR)/%.deps, $@) -o $(patsubst $(ASSEMBLY_STL_DIR)/%.stl, $(DEP_DIR)/%.deps, $@)
+	sort -rf $(patsubst $(ASSEMBLY_STL_DIR)/%.stl, $(DEP_DIR)/%.deps, $@) -o $(patsubst $(ASSEMBLY_STL_DIR)/%.stl, $(DEP_DIR)/%.deps, $@)
 	sed -i 's|[^\]$$|& \\|' $(patsubst $(ASSEMBLY_STL_DIR)/%.stl, $(DEP_DIR)/%.deps, $@)
 
 gcode : $(GCODE)
