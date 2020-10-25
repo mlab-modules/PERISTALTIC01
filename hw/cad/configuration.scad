@@ -45,7 +45,7 @@ stator_support_gap = 1;		// gap between support & stator base for spring tension
 stator_facet = 10;   // facets of outer support corners
 
 mount_width  = 8;
-mount_length = 10;
+mount_length = 10.12;
 
 d_screw = 3.5;           // screw diameter
 d_nut = 6.5;             // nut & screw head diameter

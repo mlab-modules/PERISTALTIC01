@@ -1,5 +1,5 @@
 // Created by Phisik on 2018-09-30
-// This is fully parametric perictaltic pump. I have use silicon hose OD=7 mm 
+// This is fully parametric perictaltic pump. I have use silicon hose OD=7 mm
 // & ID=5.5 mm, with 0.75 mm wall. Nema 17HS4401S motor was able to pump
 // 600-700 ml per minute (30-40 litres per hour) easily.
 //
@@ -9,6 +9,7 @@
 
 include <../configuration.scad>
 use <hose_fixator.scad>
+use <lib/bolts.scad>
 stl_dir = "../../stl/";
 
 // Assembly
@@ -23,31 +24,31 @@ partNum = 1; // 1 - stator
              // 4 - rotor base
              // 5 - rotor cover
 
-             
+
 // Part smoothness, the more the better
 $fn = 70;
 
 if(assemble) {
     alpha = 1;
-   
+
     // Part smoothness, the more the better
     $fn = 30;
-    
+
     // Nema17
     color("gray", alpha) translate([0,0,-40.2]) import(str(stl_dir, "Nema17_40h.stl"));
-    
+
     // Hose adapters
-    translate([-r_hose, -handle_length+hose_fixator_length, h_hose])   
+    translate([-r_hose, -handle_length+hose_fixator_length, h_hose])
         rotate([90,0,0])
             hose_fixator();
-    translate([r_hose, -handle_length+hose_fixator_length, h_hose])   
+    translate([r_hose, -handle_length+hose_fixator_length, h_hose])
         rotate([90,0,0])
             hose_fixator();
-        
-    
+
+
     // Hose
     color("red", alpha)  hose();
-    
+
     difference() {
         union() {
             stator_base();
@@ -55,21 +56,21 @@ if(assemble) {
                 translate([0, 60, h_base+gap/2]) stator_support();
             else
                 translate([0, 0, h_base+gap/2]) stator_support();
-            if(moved_apart) 
+            if(moved_apart)
                 translate([0, 0, 30]) stator_cover();
             else stator_cover();
         }
         if(halfcut) translate([0,-50,-25]) cube(150);
     }
-    
+
     rotor(0);
-    
+
 } else {
    if(partNum==1) stator_base();
    if(partNum==2) stator_support();
    if(partNum==3) rotate([0,180,0]) stator_cover();
    if(partNum==4) rotor(1);
-   if(partNum==5) rotate([0,180,0]) 
+   if(partNum==5) rotate([0,180,0])
        rotor(2);
 }
 
@@ -78,7 +79,7 @@ if(assemble) {
 
 
 
-// width of compressed hose 
+// width of compressed hose
 w_hose_pressed = 3.1415*(d_hose/2-hose_wall)+2*hose_wall;
 echo(w_hose_pressed=w_hose_pressed);
 
@@ -90,7 +91,7 @@ h_hose = h_base + h_support_base + bearing_clearance + h_arm + gap + bearingNum/
 // input & output hose hole diameter
 d_hose_hole = d_hose + hose_fitting_delta_d;
 
-// position of bearing axis 
+// position of bearing axis
 r_bearing = r_hose+0.5*d_hose-2*hose_wall-d_bearing/2-hose_clearance;
 echo(r_bearing=r_bearing);
 
@@ -104,7 +105,7 @@ echo(r_hose_ext=r_hose_ext);
 
 // distance from y=0 to input hole edge
 y_hole_distance = 1 + sqrt(2*(r_hose_ext+0*hose_groove)*d_hose_hole - d_hose_hole*d_hose_hole);
-            
+
 // stator overall height
 h_stator = h_hose +  + bearingNum*h_bearing/2 + gap + h_arm;
 echo(h_stator=h_stator);
@@ -148,7 +149,7 @@ if(w_hose_pressed > bearingNum * h_bearing) {
 // Hose
 //===============================================================
 module hose(){
-    translate([0,0,h_hose])  
+    translate([0,0,h_hose])
     difference() {
         rotate_extrude(angle = 180)
             translate([r_hose-0.5+0*hose_groove, 0, 0])
@@ -157,25 +158,25 @@ module hose(){
             cube([100,100,100]);
     }
     // rotate([0,0,-angle])
-             translate([-r_hose+0.5-0*hose_groove, 0, h_hose])   
+             translate([-r_hose+0.5-0*hose_groove, 0, h_hose])
              rotate([90,0,0])
                 if(moved_apart)
                     difference(){
                         cylinder(d=d_hose, h=handle_length+10);
                         translate([-25,eps,y_hole_distance]) cube([50,50,100]);
                     }
-                else 
+                else
                     cylinder(d=d_hose, h=handle_length+10);
-                
+
     // rotate([0,0,+angle])
-             translate([r_hose-0.5+0*hose_groove, 0, h_hose])   
+             translate([r_hose-0.5+0*hose_groove, 0, h_hose])
              rotate([90,0,0])
                 if(moved_apart)
                     difference(){
                         cylinder(d=d_hose, h=handle_length+10);
                         translate([-25,eps,y_hole_distance]) cube([50,50,100]);
                     }
-                else 
+                else
                     cylinder(d=d_hose, h=handle_length+10);
 }
 
@@ -186,36 +187,82 @@ module hose(){
 module stator_base() {
     difference(){
         union() {
-            translate([-r_ext, -r_hose_ext, 0])
-                cube([2*r_ext, r_ext + r_hose_ext, h_base]);
-            
-            translate([-r_ext-mount_length, -handle_length, 0])
-                cube([mount_length, handle_length+r_ext, h_base]);
-            translate([r_ext, -handle_length, 0])
-                cube([mount_length, handle_length+r_ext, h_base]);
+            translate([-r_ext, -r_hose_ext, 0]){
+                cube([2*r_ext, r_ext + r_hose_ext + 5, h_base]);
+                // rim
+                difference(){
+                    translate([-mount_length - 10, r_ext + r_hose_ext + 1, 0]){
+                        difference(){
+                            cube([r_ext*2 + mount_length*2 + 20, 4, h_stator]);
+                            translate([18, -0.1, 0])
+                                cube([r_ext*2 + mount_length*2 - 16, 5, h_stator + 0.1]);
+                        }
+                        translate([10, -3, h_stator/2])
+                            rotate([-90, 0, 0])
+                                #bolt(3, 12, false);
+                        translate([10 + 8*10.16, -3, h_stator/2])
+                            rotate([-90, 0, 0])
+                                #bolt(3, 12, false);
+                    }
+                }
+            }
+
+            translate([-r_ext - mount_length - 10, -handle_length, 0]){
+                cube([mount_length + 10, handle_length + r_ext + 5, h_base]);
+                // rim
+                cube([5, handle_length + r_ext + 5, h_stator]);
+                translate([7, 6, h_stator/2])
+                    rotate([0, -90, 0])
+                        #bolt(3, 12, false);
+                translate([7, 6 + 5*10.16, h_stator/2])
+                    rotate([0, -90, 0])
+                        #bolt(3, 12, false);
+            }
+            translate([r_ext, -handle_length, 0]){
+                cube([mount_length + 10, handle_length + r_ext + 5, h_base]);
+                // rim
+                translate([15, 0, 0]){
+                    cube([5, handle_length + r_ext + 5, h_stator]);
+                    translate([-2, 6, h_stator/2])
+                        rotate([0, 90, 0])
+                            #bolt(3, 12, false);
+                    translate([-2, 6 + 5*10.16, h_stator/2])
+                        rotate([0, 90, 0])
+                            #bolt(3, 12, false);
+                }
+            }
 
             translate([r_ext, -y_hole_distance-mount_width, 0])
-                cube([mount_length, mount_width, h_stator]);
-            translate([-r_ext-mount_length, -y_hole_distance-mount_width, 0])
-                cube([mount_length, mount_width, h_stator]);
-            
+                cube([mount_length + 10, mount_width, h_stator]);
+            translate([-r_ext-mount_length - 10, -y_hole_distance-mount_width, 0])
+                cube([mount_length + 10, mount_width, h_stator]);
+
             hose_holder();
         } // union()
-        
+
         // screws
-        translate([r_ext+mount_length/2, -handle_length+mount_length/2, -eps]) 
-            cylinder(d=d_screw, h_stator);
-        translate([-r_ext-mount_length/2, -handle_length+mount_length/2, -eps]) 
-            cylinder(d=d_screw, h_stator);
-        translate([r_ext+mount_length/2, r_ext-mount_length/2, -eps]) 
-            cylinder(d=d_screw, h_stator);
-        translate([-r_ext-mount_length/2, r_ext-mount_length/2, -eps]) 
-            cylinder(d=d_screw, h_stator);
-        
+        translate([r_ext+mount_length/2, -handle_length+mount_length/2, -eps - 2*h_stator])
+            cylinder(d=d_screw, 3*h_stator);
+        translate([-r_ext-mount_length/2, -handle_length+mount_length/2, -eps - 2*h_stator])
+            cylinder(d=d_screw, 3*h_stator);
+        translate([r_ext+mount_length/2, r_ext-mount_length/2 + 0.08, -eps - 2*h_stator])
+            cylinder(d=d_screw, 3*h_stator);
+        translate([-r_ext-mount_length/2, r_ext-mount_length/2 + 0.08, -eps - 2*h_stator])
+            cylinder(d=d_screw, 3*h_stator);
+        total_width=2*r_ext + 2*mount_length;
+        total_length=r_ext + handle_length;
+        echo(total_width=total_width);
+        echo(total_length=total_length);
+        // 7 pins x 10.16 = 71.12mm
+        echo(mount_screws_distance_x=total_width - mount_length);
+        // 6 pins x 10.16 = 60.96mm
+        echo(mount_screws_distance_y=total_length - mount_length + 0.08);
+
+
         // support screws
         nut_depth = 2.5;
         n_nut_layers = 2;
-    
+
         translate([-r_ext-mount_length/2,r_ext-stator_facet-d_screw-5,-eps]){
             translate([0,0, nut_depth+n_nut_layers*layer_height])
                 cylinder(d=d_screw, h_stator);
@@ -226,22 +273,22 @@ module stator_base() {
                 cylinder(d=d_screw, h_stator);
             cylinder(d=d_nut_tight, h = nut_depth, $fn=6);
         }
-        
+
         translate([r_ext+mount_length/2, -100, 0.5*(h_stator+h_base)])
-            rotate([-90,0,0]) 
+            rotate([-90,0,0])
             cylinder(d=d_screw, h = 100, $fn=6);
         translate([-r_ext-mount_length/2, -100, 0.5*(h_stator+h_base)])
-            rotate([-90,0,0]) 
+            rotate([-90,0,0])
             cylinder(d=d_screw, h = 100, $fn=6);
         if(need_nut_cuts_in_stator) {
             translate([-r_ext-mount_length/2, -100-y_hole_distance-mount_width+2, 0.5*(h_stator+h_base)])
-                rotate([-90,0,0]) 
+                rotate([-90,0,0])
                 cylinder(d=d_nut_tight, h = 100, $fn=6);
             translate([+r_ext+mount_length/2, -100-y_hole_distance-mount_width+2, 0.5*(h_stator+h_base)])
-                rotate([-90,0,0]) 
+                rotate([-90,0,0])
                 cylinder(d=d_nut_tight, h = 100, $fn=6);
         }
-        
+
         // Nema shaft
         translate([0,0,nema_knob_height + 2*layer_height])
                 cylinder(d=nema_shaft_diameter, h=nema_shaft_height);
@@ -250,17 +297,17 @@ module stator_base() {
                 // cylinder(d=nema_knob_diameter, h=nema_knob_height);
                 cylinder(d=nema_knob_diameter+6, h=h_base+2*eps);
 
-        
+
         // stress release & plastic saving cuts
         translate([r_ext-3,0,-eps])
             cylinder(d=15, h=h_base+2*eps);
         translate([-r_ext+3,0,-eps])
             cylinder(d=15, h=h_base+2*eps);
-        translate([0,22,-eps]) hull(){ 
+        translate([0,22,-eps]) hull(){
             translate([-5,0,0]) cylinder(d=10, h=h_base+2*eps);
             translate([5,0,0]) cylinder(d=10, h=h_base+2*eps);
         }
-        
+
         // Nema screws
         for(alpha=[45:90:315]) {
             translate([sin(alpha),cos(alpha),0]*nema_screw_distance/sqrt(2)-[0,0,eps]){
@@ -269,17 +316,17 @@ module stator_base() {
                     cylinder(d=d_nut,h_base);
             }
         } // for()
-        
-        // water sink 
+
+        // water sink
         translate([0, -y_hole_distance, h_base+r_water_sink])
         rotate([90,0,0])
             cylinder(r=r_water_sink, h=100, $fn=6);
-        
-        
+
+
         // holder cover
         translate([-r_ext - eps, -2*r_hose_ext, h_hose])
                 cube([2*r_ext+2*eps, 2*r_hose_ext, handle_length]);
-   
+
         // Nema shaft
         translate([0,0,nema_knob_height + 2*layer_height])
             cylinder(d=nema_shaft_diameter, h=nema_shaft_height);
@@ -287,11 +334,11 @@ module stator_base() {
         translate([0,0,-eps])
             cylinder(d=nema_knob_diameter, h=nema_knob_height);
     } // difference()
-    
+
 } // stator()
 
 
-// Stator support for hose with clearance adjustment 
+// Stator support for hose with clearance adjustment
 //===============================================================
 module stator_support() {
     module axis_cut(d=nema_shaft_diameter+gap/2, h=h_stator) {
@@ -302,8 +349,8 @@ module stator_support() {
                 cylinder(d = d, h=h);
         }
     } // module axis_cut()
-    
-    
+
+
     difference(){
         hull(){
             translate([-(r_ext-stator_facet), (r_ext-stator_facet), 0])
@@ -315,19 +362,19 @@ module stator_support() {
             translate([r_ext-10, -y_hole_distance+stator_support_gap, 0])
                 cube([10, 10, h_stator-h_base]);
         }
-        
+
         // rotor cutout
         translate([0, 0, h_support_base])
-            cylinder(r=r_hose_ext, h=h_stator);  
-        
+            cylinder(r=r_hose_ext, h=h_stator);
+
         // cut rounded edges near the hose holder
         translate([-r_hose_ext, -y_hole_distance, h_support_base])
-            cube([2*r_hose_ext, y_hole_distance, h_stator]);            
-        
+            cube([2*r_hose_ext, y_hole_distance, h_stator]);
+
         // cutout for motor axis
         axis_cut();
     }
-    
+
     // water protection
     translate([0, 0, h_support_base])
     difference(){
@@ -339,40 +386,40 @@ module stator_support() {
         }
         axis_cut() ;
     }
-    
-    
+
+
     // mounting
     difference(){
         translate([r_ext, -y_hole_distance+stator_support_gap, 0])
             cube([mount_length, mount_width, h_stator-h_base]);
         translate([r_ext+mount_length/2, -100, 0.5*(h_stator-h_base)-gap/2])
-            rotate([-90,0,0]) 
+            rotate([-90,0,0])
             cylinder(d=d_screw, h = 100, $fn=6);
         if(need_nut_cuts_in_support)
             translate([r_ext+mount_length/2, -y_hole_distance+stator_support_gap+mount_width-2, 0.5*(h_stator-h_base)-gap/2])
-            rotate([-90,0,0]) 
+            rotate([-90,0,0])
             cylinder(d=d_nut_tight, h = 100, $fn=6);
     }
     difference(){
         translate([-r_ext-mount_length, -y_hole_distance+stator_support_gap, 0])
             cube([mount_length, mount_width, h_stator-h_base]);
         translate([-r_ext-mount_length/2, -100, 0.5*(h_stator-h_base)-gap/2])
-            rotate([-90,0,0]) 
+            rotate([-90,0,0])
             cylinder(d=d_screw, h = 100, $fn=6);
         if(need_nut_cuts_in_support)
             translate([-r_ext-mount_length/2, -y_hole_distance+stator_support_gap+mount_width-2, 0.5*(h_stator-h_base)-gap/2])
-            rotate([-90,0,0]) 
+            rotate([-90,0,0])
             cylinder(d=d_nut_tight, h = 100, $fn=6);
     }
-    
-    // guide   
+
+    // guide
     translate([r_ext, -y_hole_distance+stator_support_gap+mount_width, 0])
     difference(){
         length = r_ext+y_hole_distance-mount_width-stator_facet-stator_support_gap;
         cube([mount_length, length, h_base]);
         translate([mount_length/2,length-d_screw-5,0]) axis_cut(d_screw);
     }
-    
+
     translate([-r_ext-mount_length, -y_hole_distance+stator_support_gap+mount_width, 0])
     difference(){
         length = r_ext+y_hole_distance-mount_width-stator_facet-stator_support_gap;
@@ -390,46 +437,46 @@ module hose_holder(){
   difference(){
     translate([-r_ext, -handle_length, 0]) {
         cube([2*r_ext, handle_length-y_hole_distance, h_stator]);
-    }            
-   
+    }
+
     // rotor cut out
     translate([0,0,-eps])
         cylinder(r = r_hose + d_hose/2, h=50-eps);
-    
+
      // hose input & output holes
      // rotate([0,0,-angle])
-         translate([-r_hose+hose_fitting_delta_d/2-0*hose_groove, 0, h_hose])   
+         translate([-r_hose+hose_fitting_delta_d/2-0*hose_groove, 0, h_hose])
          rotate([90,0,0])
          cylinder(d=d_hose_hole, h=100);
-    
+
      // rotate([0,0,+angle])
-         translate([r_hose-hose_fitting_delta_d/2, 0, h_hose])   
+         translate([r_hose-hose_fitting_delta_d/2, 0, h_hose])
          rotate([90,0,0])
          cylinder(d=d_hose_hole, h=100);
-    
+
     // screws & nuts
     nut_depth = 4;
     screw_depth = 3;
     n_nut_layers = 2;
-    
+
     cover_screw_hole_x_distance = -r_ext+d_hose + hose_fitting_delta_d + 4 + d_screw;
     cover_screw_hole_y_distance = -(handle_length+y_hole_distance)*0.5;
-    
+
     translate([cover_screw_hole_x_distance, cover_screw_hole_y_distance, -eps]) {
         translate([0,0,nut_depth+n_nut_layers*layer_height])
             cylinder(d=d_screw, h = h_stator-nut_depth-screw_depth-2*n_nut_layers*layer_height);
-        translate([0,0,h_stator-screw_depth]) 
+        translate([0,0,h_stator-screw_depth])
             cylinder(d=d_nut, h = 10);
-        rotate([0,0,-30]) 
+        rotate([0,0,-30])
             cylinder(d=d_nut_tight, h = nut_depth, $fn=6);
     }
     // screws & nuts
     translate([-cover_screw_hole_x_distance, cover_screw_hole_y_distance, -eps]) {
         translate([0,0,nut_depth+n_nut_layers*layer_height])
             cylinder(d=d_screw, h = h_stator-nut_depth-screw_depth-2*n_nut_layers*layer_height);
-        translate([0,0,h_stator-screw_depth]) 
+        translate([0,0,h_stator-screw_depth])
             cylinder(d=d_nut, h = 10);
-        rotate([0,0,30]) 
+        rotate([0,0,30])
             cylinder(d=d_nut_tight, h = nut_depth, $fn=6);
     }
   }
@@ -442,24 +489,24 @@ module hose_holder(){
 module stator_cover(){
     difference(){
          hose_holder();
-        
+
          translate([-r_ext-eps, -handle_length-eps,-eps])
             cube([2*r_ext+2*eps, handle_length, h_hose+gap]);
-         
+
         translate([-r_ext-eps, -handle_length-eps,-eps])
             cube([gap, handle_length, h_stator+gap]);
         translate([r_ext-gap+eps, -handle_length-eps,-eps])
             cube([gap, handle_length, h_stator+gap]);
 
-        
+
          // hose input & output holes
          //rotate([0,0,-angle])
-             translate([-r_hose+hose_fitting_delta_d/2, 0, h_hose])   
+             translate([-r_hose+hose_fitting_delta_d/2, 0, h_hose])
              rotate([90,0,0])
              cylinder(d=d_hose_hole, h=100);
-        
+
         // rotate([0,0,+angle])
-             translate([r_hose-hose_fitting_delta_d/2, 0, h_hose])   
+             translate([r_hose-hose_fitting_delta_d/2, 0, h_hose])
              rotate([90,0,0])
              cylinder(d=d_hose_hole, h=100);
         }
@@ -470,7 +517,7 @@ module stator_cover(){
 //===============================================================
 module rotor(type = 0){
     difference() {
-        translate([0, 0,h_hose]) 
+        translate([0, 0,h_hose])
         union()
         {
             if(type == 0 || type ==1) rotor_base();
@@ -478,7 +525,7 @@ module rotor(type = 0){
             if(type == 0) bearings();
         }
        shaft();
-    } 
+    }
 }
 
 
@@ -487,71 +534,71 @@ module rotor(type = 0){
 module rotor_cap() {
     for(i = [1 : arm_num]) {
         angle = 360/arm_num*i;
-        
+
         difference(){
             // arms
              //translate([0,0,h_arm])
                 union(){
                     // arms
-                    translate([0,0,gap]) 
-                        hull(){ 
+                    translate([0,0,gap])
+                        hull(){
                             cylinder(d=w_arm, h=h_arm);
                             r = r_hose+d_hose/2-w_arm/2-arm_clearance;
-                            translate([r*sin(angle), r*cos(angle), h_arm/2]) 
+                            translate([r*sin(angle), r*cos(angle), h_arm/2])
                                 torus(w_arm/2-h_arm/2, h_arm);
                         }
-                    // bearings axes    
+                    // bearings axes
                     translate([r_bearing*sin(angle), r_bearing*cos(angle), 0])
                         cylinder(d=d_bearing_axis+2*w_axis, h=gap);
-                        
+
                     if(enable_hose_guides)
                         difference() {
                             intersection(){
                                 for(i = [1 : arm_num]) {
                                     angle = 360/arm_num*(i+0.5);
-                                    
+
                                     hull()
-                                    { 
-                                        
+                                    {
+
                                         translate([0,0,h_arm+gap-h_guide+r_hose_guide_facet]) rotate([0,90,90-angle]) {
-                                            translate([0,-0.5*w_hose_guide+r_hose_guide_facet,0]) 
-                                                cylinder(r=r_hose_guide_facet, h=r_ext); 
-                                            translate([0,+0.5*w_hose_guide-r_hose_guide_facet,0]) 
-                                                cylinder(r=r_hose_guide_facet, h=r_ext); 
+                                            translate([0,-0.5*w_hose_guide+r_hose_guide_facet,0])
+                                                cylinder(r=r_hose_guide_facet, h=r_ext);
+                                            translate([0,+0.5*w_hose_guide-r_hose_guide_facet,0])
+                                                cylinder(r=r_hose_guide_facet, h=r_ext);
                                         }
-                                    
+
                                         rotate([0,0,90-angle])
                                             translate([0,-w_hose_guide/2,h_arm+gap-1])
                                             cube([r_ext, w_hose_guide, 1]);
 
-                                    } // hull()     
+                                    } // hull()
 
-                                } // for()  
+                                } // for()
                                 translate([0,0,-h_guide])
                                     cylinder(r=r_hose_ext-hose_guide_clearance, h=h_stator)  ;
                             } // intersection()
                             translate([0,0,-50]) cylinder(d=d_rotor+gap, h=100);
                         }
                 }
-            
-            
+
+
             // holes for bearing axes
             translate([r_bearing*sin(angle), r_bearing*cos(angle), -eps])
                 cylinder(d=d_bearing_axis + rotor_bearing_axes_clearance - bearing_axes_clearance, h=1*h_arm+gap -1);
             // hole for the screws
             translate([r_bearing*sin(angle), r_bearing*cos(angle), -eps])
                 cylinder(d=2.5, h=1*h_arm+gap + 2*eps);
-                
-            
-             
+
+
+
         }
     }
-    
-    translate([0,0,gap]) 
+
+    translate([0,0,gap])
         if(enable_hose_guides) cylinder(d=d_rotor*1.5, h=h_arm);
         else cylinder(d=d_rotor, h=h_arm);
-    
-    
+
+
 }
 //translate([0,0,gap]) cylinder(d=d_rotor, h=100);
 
@@ -559,17 +606,17 @@ module rotor_cap() {
 //===============================================================
 module rotor_base() {
     screw_height = h_arm + bearingNum*h_bearing/2;
-    
+
     translate([0,0,-h_arm - bearingNum/2*h_bearing - gap])
         difference() {
             // axis
             cylinder(d=d_rotor, h=rotor_height-h_arm);
-            
+
             // screw
             translate([0,0,screw_height])
-                rotate([-90,0,180/arm_num]) 
+                rotate([-90,0,180/arm_num])
                 cylinder(d=d_screw, h=40, $fn=6);
-            
+
             // nut
             rotate([-90,0,180/arm_num]) {
                 translate([0,-screw_height,3.5]) hull(){
@@ -577,26 +624,26 @@ module rotor_base() {
                     translate([0,-50,0]) cylinder(d=d_nut, h=2.7, $fn=6);
                 }
             } // rotate()
-        } // difference()    
+        } // difference()
 
     // arms
 
     translate([0,0,-bearingNum/2*h_bearing])
         for(i = [1 : arm_num]) {
             angle = 360/arm_num*i;
-            
+
             // arm
-            translate([0,0,-h_arm-gap]) 
-                hull(){ 
+            translate([0,0,-h_arm-gap])
+                hull(){
                     cylinder(d=w_arm, h=h_arm);
                     r = r_hose+d_hose/2-w_arm/2-arm_clearance;
-                    translate([r*sin(angle), r*cos(angle), h_arm/2]) 
+                    translate([r*sin(angle), r*cos(angle), h_arm/2])
                         torus(w_arm/2-h_arm/2, h_arm);
                 } // hull()
-                
+
             // bearing axis
             translate(r_bearing*[sin(angle), cos(angle), 0]) {
-                difference(){ 
+                difference(){
                     height = bearingNum*h_bearing + gap + h_arm-1;
                     cylinder(d=d_bearing_axis-bearing_axes_clearance, h=height);
                     translate([0,0,height-10])
@@ -606,32 +653,32 @@ module rotor_base() {
                     cylinder(d=d_bearing_axis+2*w_axis, h=gap);
             } // translate()
         } // for()
-        
-        
+
+
     // hose guides
     if(enable_hose_guides)
        translate([0,0,-bearingNum/2*h_bearing-h_arm-gap])
         intersection(){
             for(i = [1 : arm_num]) {
                 angle = 360/arm_num*(i+0.5);
-                
+
                 hull()
-                { 
-                    
+                {
+
                     translate([0,0,h_guide-r_hose_guide_facet]) rotate([0,90,90-angle]) {
-                        translate([0,-0.5*w_hose_guide+r_hose_guide_facet,0]) 
-                            cylinder(r=r_hose_guide_facet, h=r_ext); 
-                        translate([0,+0.5*w_hose_guide-r_hose_guide_facet,0]) 
-                            cylinder(r=r_hose_guide_facet, h=r_ext); 
+                        translate([0,-0.5*w_hose_guide+r_hose_guide_facet,0])
+                            cylinder(r=r_hose_guide_facet, h=r_ext);
+                        translate([0,+0.5*w_hose_guide-r_hose_guide_facet,0])
+                            cylinder(r=r_hose_guide_facet, h=r_ext);
                     }
-                
+
                     rotate([0,0,90-angle])
                         translate([0,-w_hose_guide/2,])
                         cube([r_ext, w_hose_guide, 1]);
 
-                } // hull()     
+                } // hull()
 
-            } // for()  
+            } // for()
             cylinder(r=r_hose_ext-hose_guide_clearance, h=h_stator)  ;
         } // intersection()
 } // module rotor_base()
@@ -639,20 +686,20 @@ module rotor_base() {
 
 
 
-// draw bearings   
+// draw bearings
 //===============================================================
  use <605zz.scad>;
 module bearings(alpha = 1){
-    color("blue", alpha) 
+    color("blue", alpha)
     for(i = [1 : arm_num]) {
         angle = 360/arm_num*i;
-        translate(r_bearing*[sin(angle), cos(angle), 0]) 
+        translate(r_bearing*[sin(angle), cos(angle), 0])
             for(j = [1:bearingNum] )
                 translate([0,0,(j-1-bearingNum/2)*h_bearing+0.1])
                     // scale 605zz bearing model to fit actual bearing size
                     scale([1,1,0]*d_bearing/14+[0,0,(h_bearing-0.2)/5])
                         605zz();
-       
+
     } // for
 }
 
@@ -660,7 +707,7 @@ module bearings(alpha = 1){
 // NEMA 17 shaft
 //===============================================================
 module shaft() {
-    rotate([0,0,90+180/arm_num]) 
+    rotate([0,0,90+180/arm_num])
         difference(){
             d = 5+0.4;
             cylinder(d=d, h=50);

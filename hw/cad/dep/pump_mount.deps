@@ -1,0 +1,10 @@
+../stl/assembly/pump_mount.stl: \
+	src/pump-v3.scad \
+	src/lib/copyFunctions.scad \
+	src/lib/bolts.scad \
+	src/hose_fixator.scad \
+	src/assembly/pump_mount.scad \
+	src/assembly/../../../stl/Nema17_40h.stl \
+	src/605zz.scad \
+	parameters.scad \
+	configuration.scad \
