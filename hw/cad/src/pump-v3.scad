@@ -190,19 +190,19 @@ module stator_base() {
             translate([-r_ext, -r_hose_ext, 0]){
                 cube([2*r_ext, r_ext + r_hose_ext + 5, h_base]);
                 // rim
-                difference(){
-                    translate([-mount_length - 10, r_ext + r_hose_ext + 1, 0]){
+                translate([-mount_length - 10, r_ext + r_hose_ext + 1, 0]){
+                    difference(){
                         difference(){
                             cube([r_ext*2 + mount_length*2 + 20, 4, h_stator]);
                             translate([18, -0.1, 0])
                                 cube([r_ext*2 + mount_length*2 - 16, 5, h_stator + 0.1]);
                         }
-                        translate([10, -3, h_stator/2])
+                        translate([10, -3.1, h_stator/2])
                             rotate([-90, 0, 0])
-                                #bolt(3, 12, false);
-                        translate([10 + 8*10.16, -3, h_stator/2])
+                                bolt(3, 12, false);
+                        translate([10 + 8*10.16, -3.1, h_stator/2])
                             rotate([-90, 0, 0])
-                                #bolt(3, 12, false);
+                                bolt(3, 12, false);
                     }
                 }
             }
@@ -210,25 +210,29 @@ module stator_base() {
             translate([-r_ext - mount_length - 10, -handle_length, 0]){
                 cube([mount_length + 10, handle_length + r_ext + 5, h_base]);
                 // rim
-                cube([5, handle_length + r_ext + 5, h_stator]);
-                translate([7, 6, h_stator/2])
-                    rotate([0, -90, 0])
-                        #bolt(3, 12, false);
-                translate([7, 6 + 5*10.16, h_stator/2])
-                    rotate([0, -90, 0])
-                        #bolt(3, 12, false);
+                difference(){
+                    cube([5, handle_length + r_ext + 5, h_stator]);
+                    translate([7, 6, h_stator/2])
+                        rotate([0, -90, 0])
+                            bolt(3, 12, false);
+                    translate([7, 6 + 5*10.16, h_stator/2])
+                        rotate([0, -90, 0])
+                            bolt(3, 12, false);
+                }
             }
             translate([r_ext, -handle_length, 0]){
                 cube([mount_length + 10, handle_length + r_ext + 5, h_base]);
                 // rim
                 translate([15, 0, 0]){
-                    cube([5, handle_length + r_ext + 5, h_stator]);
-                    translate([-2, 6, h_stator/2])
-                        rotate([0, 90, 0])
-                            #bolt(3, 12, false);
-                    translate([-2, 6 + 5*10.16, h_stator/2])
-                        rotate([0, 90, 0])
-                            #bolt(3, 12, false);
+                    difference(){
+                        cube([5, handle_length + r_ext + 5, h_stator]);
+                        translate([-2, 6, h_stator/2])
+                            rotate([0, 90, 0])
+                                bolt(3, 12, false);
+                        translate([-2, 6 + 5*10.16, h_stator/2])
+                            rotate([0, 90, 0])
+                                bolt(3, 12, false);
+                    }
                 }
             }
 
@@ -333,6 +337,16 @@ module stator_base() {
         // Nema knob
         translate([0,0,-eps])
             cylinder(d=nema_knob_diameter, h=nema_knob_height);
+
+        // Base V shaped cut
+        for(i=[-100:10:100]) {
+            translate([i, 0, 0]) {
+                rotate([45, 0, 45])
+                    cube([200, 0.5, 0.5], center=true);
+                rotate([45, 0, -45])
+                    cube([200, 0.5, 0.5], center=true);
+            }
+        }
     } // difference()
 
 } // stator()
