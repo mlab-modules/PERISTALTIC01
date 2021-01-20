@@ -9,7 +9,8 @@ GCODE_DIR := ../amf/gcode
 PLATE_DIMMENSIONS=120
 SIMARRANGE=/usr/local/bin/simarrange
 STLSORT := stlsort
-OPENSCAD_APP := OpenSCAD
+AMFSORT := ./amfsort.py
+OPENSCAD_APP := $(shell which openscad || which openscad-nightly)
 MERGE_APP := ./merge_modifiers.sh
 SLICER_APP := Slic3r
 VPATH := $(SRC_DIR):$(DEP_DIR):$(AMF_DIR):$(IMG_DIR)
@@ -28,6 +29,8 @@ all : amf images stl gcode assembly
 
 print : amf gcode
 
+view : stl images
+
 calibration:
 	openscad -m make -o calibration.stl calibration.scad
 
@@ -35,16 +38,18 @@ amf : $(TARGETS)
 
 $(AMF_DIR)/%.amf : $(SRC_DIR)/%.scad
 	####################################################################################
-	# MAKING AMF FOR $< 
+	# MAKING AMF FOR $<
 	####################################################################################
 	#
 	# Update dependencies and make no-draft version of model in AMF.
-	$(OPENSCAD_APP) -q -D "draft = false" -m make -o $@ -d $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@) $<
+	$(OPENSCAD_APP) -D "draft = false" -m make -o $@ -d $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@) $<
 	# Remove absolute paths in dependencies.
 	sed -i "s|$(shell pwd)/||" $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@)
 	# Sort deps file to keep git changes to minimum.
 	sort -rf $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@) -o $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@)
 	sed -i 's|[^\]$$|& \\|' $(patsubst $(AMF_DIR)/%.amf, $(DEP_DIR)/%.deps, $@)
+	# Sort AMF file to keep git changes to minimum.
+	$(AMFSORT) $@
 	# Add modifiers to AMF files.
 	$(MERGE_APP) -v -a $@ -s $<
 
@@ -54,11 +59,11 @@ stl : $(STL)
 
 $(STL_DIR)/%.stl : $(AMF_DIR)/%.amf
 	####################################################################################
-	# MAKING STL FOR $< 
+	# MAKING STL FOR $<
 	####################################################################################
 	#
 	# Make no-draft version of model in STL.
-	$(OPENSCAD_APP) -q -D "draft = false" -m make -o $@ $(patsubst $(STL_DIR)/%.stl, $(SRC_DIR)/%.scad, $@)
+	$(OPENSCAD_APP) -D "draft = false" -m make -o $@ $(patsubst $(STL_DIR)/%.stl, $(SRC_DIR)/%.scad, $@)
 	# Sort stl file to keep git changes to minimum.
 	$(STLSORT) $@ || :
 
@@ -66,13 +71,13 @@ images : $(IMAGES)
 
 $(IMG_DIR)/%.png : $(STL_DIR)/%.stl
 	####################################################################################
-	# MAKING PNG FOR $< 
+	# MAKING PNG FOR $<
 	####################################################################################
 	#
 	# Create temporary file for fast image rendering.
-	-echo "import(\"$<\");" > tmp.scad
+	echo "import(\"$<\");" > tmp.scad
 	# Render PNG image from temporary file.
-	$(OPENSCAD_APP) -q -o $@ tmp.scad
+	$(OPENSCAD_APP) -o $@ tmp.scad
 	# Remove temporary file
 	rm -f tmp.scad
 
@@ -80,7 +85,7 @@ assembly : $(ASSEMBLY)
 
 $(ASSEMBLY_STL_DIR)/%.stl : $(ASSEMBLY_DIR)/%.scad
 	####################################################################################
-	# MAKING STL FOR $< 
+	# MAKING STL FOR $<
 	####################################################################################
 	# $(ASSEMBLY_STL_DIR)
 	# Update dependencies and make no-draft version of model in STL.
@@ -95,7 +100,7 @@ gcode : $(GCODE)
 
 $(GCODE_DIR)/%.gcode : $(AMF_DIR)/%.amf
 	####################################################################################
-	# MAKING GCODE FOR $< 
+	# MAKING GCODE FOR $<
 	####################################################################################
 	#
 	# Generate gcode files.
