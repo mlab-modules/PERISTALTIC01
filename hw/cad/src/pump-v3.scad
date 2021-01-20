@@ -100,7 +100,7 @@ r_ext = r_hose + d_hose/2 + wall - hose_groove;
 echo(r_ext=r_ext);
 
 // hose external radius
-r_hose_ext = r_hose + d_hose/2 ;
+r_hose_ext = r_hose + d_hose/2;
 echo(r_hose_ext=r_hose_ext);
 
 // distance from y=0 to input hole edge
@@ -207,23 +207,23 @@ module stator_base() {
                 }
             }
 
-            translate([-r_ext - mount_length - 10, -handle_length, 0]){
+            translate([-r_ext - mount_length - 10, -handle_length, 0])
                 cube([mount_length + 10, handle_length + r_ext + 5, h_base]);
-                // rim
-                difference(){
-                    cube([5, handle_length + r_ext + 5, h_stator]);
-                    translate([7, 6, h_stator/2])
-                        rotate([0, -90, 0])
-                            bolt(3, 12, false);
-                    translate([7, 6 + 5*10.16, h_stator/2])
-                        rotate([0, -90, 0])
-                            bolt(3, 12, false);
-                }
+            // rim
+            difference(){
+            translate([-r_ext - mount_length - 10, -handle_length, 0])
+                cube([5, handle_length + r_ext + 5, h_stator]);
+                translate([7, 6, h_stator/2])
+                    rotate([0, -90, 0])
+                        bolt(3, 12, false);
+                translate([7, 6 + 5*10.16, h_stator/2])
+                    rotate([0, -90, 0])
+                        bolt(3, 12, false);
             }
             translate([r_ext, -handle_length, 0]){
                 cube([mount_length + 10, handle_length + r_ext + 5, h_base]);
                 // rim
-                translate([15, 0, 0]){
+                translate([15.2, 0, 0]){
                     difference(){
                         cube([5, handle_length + r_ext + 5, h_stator]);
                         translate([-2, 6, h_stator/2])

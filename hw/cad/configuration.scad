@@ -15,7 +15,7 @@ layer_height = 0.25;
 //====================================================================================
 
 // NB! The larger the hose radius the higher torque is required
-r_hose = 22;        // radius of hose center line
+r_hose = 24;        // radius of hose center line
                     // Update: after addition of groove hose center is at r_hose + hose_groove
 d_hose = 9;         // hose diameter
 
@@ -66,7 +66,7 @@ hose_fixator_length = 15;  // length of hose inset for fixing it on the stator
 bearingNum = 3;     // Number of bearings per arm
 
 h_bearing = 5;      // bearing height
-d_bearing = 14;     // OD
+d_bearing = 16;     // OD
 d_bearing_axis = 5;         // ID
 w_axis = 1;         // thickness of inner bushing
 
