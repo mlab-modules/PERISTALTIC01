@@ -11,7 +11,8 @@ SIMARRANGE=/usr/local/bin/simarrange
 STLSORT := stlsort
 AMFSORT := ./amfsort.py
 OPENSCAD_APP := $(shell which openscad || which openscad-nightly)
-MERGE_APP := ./merge_modifiers.sh
+MERGE_MODIFIERS := ./merge_modifiers.sh
+MERGE_SLIC3R_CONF := ./merge_slic3r_conf.sh
 SLICER_APP := Slic3r
 VPATH := $(SRC_DIR):$(DEP_DIR):$(AMF_DIR):$(IMG_DIR)
 SRC_FILES := $(filter-out src/bar.cpp, $(SRC_FILES))
@@ -51,7 +52,7 @@ $(AMF_DIR)/%.amf : $(SRC_DIR)/%.scad
 	# Sort AMF file to keep git changes to minimum.
 	$(AMFSORT) $@
 	# Add modifiers to AMF files.
-	$(MERGE_APP) -v -a $@ -s $<
+	$(MERGE_MODIFIERS) -v -a $@ -s $<
 
 include $(wildcard $(DEP_DIR)/*.deps)
 
@@ -104,7 +105,9 @@ $(GCODE_DIR)/%.gcode : $(AMF_DIR)/%.amf
 	####################################################################################
 	#
 	# Generate gcode files.
-	$(SLICER_APP) --load default.ini -o $@ --no-gui -j 3 $<
+	#$(SLICER_APP) --load default.ini -o $@ --no-gui -j 3 $<
+	$(MERGE_SLIC3R_CONF) -v -s $(patsubst $(GCODE_DIR)/%.gcode, $(SRC_DIR)/%.scad, $@) -a $<
+	mv $(patsubst $(AMF_DIR)/%.amf, $(AMF_DIR)/%.gcode, $<) $@
 
 arrange : amf
 	$(SIMARRANGE) -x $(PLATE_DIMMENSIONS) -y $(PLATE_DIMMENSIONS) $(ARRANGE_TARGETS)
