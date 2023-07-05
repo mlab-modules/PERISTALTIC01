@@ -7,20 +7,22 @@ github_url: https://github.com/mlab-modules/PERISTALTIC01
 homepage: false
 image: doc/src/img/hose_fixator.png
 images:
-- doc/src/img/case-v3.png
-- doc/src/img/hose_joiner.png
-- doc/src/img/pump-v3.png
-- doc/src/img/hose_fixator.png
-- doc/src/img/605zz.png
 - doc/src/img/lcd1602.png
-- doc/src/img/4printing/case_top.png
+- doc/src/img/case-v3.png
+- doc/src/img/605zz.png
+- doc/src/img/hose_joiner.png
+- doc/src/img/hose_fixator.png
+- doc/src/img/pump-v3.png
 - doc/src/img/4printing/rotor_base.png
 - doc/src/img/4printing/stator_base.png
-- doc/src/img/4printing/stator_cover.png
 - doc/src/img/4printing/case_bottom.png
-- doc/src/img/4printing/rotor_cover.png
+- doc/src/img/4printing/case_top.png
 - doc/src/img/4printing/stator_support.png
+- doc/src/img/4printing/stator_cover.png
+- doc/src/img/4printing/rotor_cover.png
 issues: 1
 mark: 50
-tags: []
+tags:
+- mlab
+- mlab-module
 title: PERISTALTIC01
