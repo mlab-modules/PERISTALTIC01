@@ -22,6 +22,7 @@ images:
 - doc/src/img/4printing/stator_base.png
 issues: 1
 mark: 50
+status: 1
 tags:
 - mlab
 - mlab-module
