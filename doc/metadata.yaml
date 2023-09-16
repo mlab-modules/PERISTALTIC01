@@ -5,7 +5,7 @@ github_branches:
 github_repo: PERISTALTIC01
 github_url: https://github.com/mlab-modules/PERISTALTIC01
 homepage: false
-image: doc/src/img/hose_fixator.png
+image_title: doc/src/img/hose_fixator.png
 images:
 - doc/src/img/hose_joiner.png
 - doc/src/img/case-v3.png
