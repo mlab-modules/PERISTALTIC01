@@ -2,6 +2,7 @@ description: 'Peristaltic pump '
 github_branch: PERISTALTIC01A
 github_branches:
 - PERISTALTIC01A
+github_description: 'Peristaltic pump '
 github_repo: PERISTALTIC01
 github_url: https://github.com/mlab-modules/PERISTALTIC01
 homepage: false
@@ -27,4 +28,4 @@ tags:
 - mlab
 - mlab-module
 title: PERISTALTIC01
-updated: '2023-09-16T16:04:25.216220+00:00'
+updated: '2023-09-17T11:31:03.832438+00:00'
